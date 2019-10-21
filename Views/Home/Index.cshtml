@@ -28,4 +28,18 @@
         <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
         <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
     </div>
+
+</div>
+
+<h2>Claims</h2>
+
+@foreach (var claim in ((System.Security.Claims.ClaimsPrincipal)User).Claims)
+{
+    <div>
+        <p>@claim.Type  : @claim.Value</p>
+    </div>
+}
+
+<div>
+    <a href="/Auth/Logout">Log out</a>
 </div>

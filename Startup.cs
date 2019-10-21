@@ -19,12 +19,26 @@ namespace OwinTestWebApplication
 
         public void ConfigureAuth(IAppBuilder app)
         {
-            //app.UseCookieAuthentication(
-            //    new CookieAuthenticationOptions
-            //    {
-            //        AuthenticationType =
-            //           CookieAuthenticationDefaults.AuthenticationType
-            //    });
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationType = "ApplicationCookie",
+                LoginPath = new PathString("/Auth/Login")
+            });
+
+            app.Use(async (ctx, next) =>
+            {
+                if (ctx.Authentication.User.Identity.IsAuthenticated)
+                {
+                    Debug.WriteLine(string.Format("User {0} Authenticated", ctx.Authentication.User.Identity.Name));
+                }
+                else
+                {
+                    Debug.WriteLine("User Not Authenticated");
+                }
+
+                await next();
+            });
+
 
             app.UseDebugMiddleware(new DebugMiddlewareOptions
             {
