@@ -1,0 +1,82 @@
+﻿using Microsoft.Owin;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.Cookies;
+using Owin;
+using SourceCode.Owin.Security.Authentication.Training.Middleware;
+using SourceCode.Owin.Security.Authentication.WsFederation;
+using System.Diagnostics;
+
+[assembly: OwinStartup(typeof(OwinTestWebApplication.Startup))]
+namespace OwinTestWebApplication
+{
+    public class Startup
+    {
+        public void Configuration(IAppBuilder app)
+        {
+            // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=316888
+            ConfigureAuth(app);
+        }
+
+        public void ConfigureAuth(IAppBuilder app)
+        {
+            //app.UseCookieAuthentication(
+            //    new CookieAuthenticationOptions
+            //    {
+            //        AuthenticationType =
+            //           CookieAuthenticationDefaults.AuthenticationType
+            //    });
+
+            app.UseDebugMiddleware(new DebugMiddlewareOptions
+            {
+                OnIncommingRequest = (ctx) =>
+                {
+                    var watch = new Stopwatch();
+                    watch.Start();
+                    ctx.Environment["DebugStopwatch"] = watch;
+                },
+
+                OnOutgoingRequest = (ctx) =>
+                {
+                    var watch = ctx.Environment["DebugStopwatch"] as Stopwatch;
+                    watch.Stop();
+
+                    Debug.WriteLine("Time taken: {0}ms", watch.ElapsedMilliseconds);
+                }
+            });
+
+            app.UseDebugMiddleware(config =>
+            {
+                config.OnIncommingRequest = (ctx) =>
+                {
+                    var watch = new Stopwatch();
+                    watch.Start();
+                    ctx.Environment["DebugStopwatch"] = watch;
+                };
+
+                config.OnOutgoingRequest = (ctx) =>
+                {
+                    var watch = ctx.Environment["DebugStopwatch"] as Stopwatch;
+                    watch.Stop();
+
+                    Debug.WriteLine("Time taken for config: {0}ms", watch.ElapsedMilliseconds);
+                };
+            });
+
+            //app.Use(async (ctx, next) =>
+            //{
+            //    Debug.WriteLine("Incoming request: " + ctx.Request.Path);
+            //    await next();
+            //    Debug.WriteLine("Outgoing request: " + ctx.Request.Path);
+            //});
+
+            //app.Use(async (ctx, next) =>
+            //{
+            //    await ctx.Response.WriteAsync("Hello World");
+            //});
+
+            //app.UseWsFederationAuthentication();
+
+            //app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
+        }
+    }
+}
