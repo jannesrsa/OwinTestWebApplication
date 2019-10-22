@@ -25,6 +25,13 @@ namespace OwinTestWebApplication
                 LoginPath = new PathString("/Auth/Login")
             });
 
+            app.UseFacebookAuthentication(new Microsoft.Owin.Security.Facebook.FacebookAuthenticationOptions()
+            {
+                AppId = "480974769162439",
+                AppSecret = "7db55e83b45f0e2da9580d88d1bf9928",
+                SignInAsAuthenticationType = "ApplicationCookie"
+            });
+
             app.Use(async (ctx, next) =>
             {
                 if (ctx.Authentication.User.Identity.IsAuthenticated)

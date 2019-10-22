@@ -7,6 +7,7 @@ using System.Web.Mvc;
 namespace OwinTestWebApplication.Controllers
 {
     [Authorize]
+    [RequireHttps]
     public class HomeController : Controller
     {
         public ActionResult Index()
